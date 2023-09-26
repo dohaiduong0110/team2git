@@ -2,22 +2,11 @@ import pandas as pd
 from numpy import array
 import matplotlib.pyplot as plt
 import numpy as np
-df=pd.read_csv('diemPython.csv',index_col=0,header = 0)
-in_data = array(df.iloc[:,:])
-print(in_data)
-print('Tong so sinh vien di thi :')
-tongsv= in_data[:,1]
-print(np.sum(tongsv))
-diemA = in_data[:,3]
-diemBc = in_data[:,4]
-print('Tong sv:',tongsv)
-maxa = diemA.max()
-i, = np.where(diemA == maxa)
-print('lop co nhieu diem A la {0} co {1} sv dat diem A'.format(in_data[i,0],maxa))
-plt.plot(range(len(diemA)),diemA,'r-',label="Điểm A")
-plt.plot(range(len(diemBc)),diemBc,'g-',label="Điểm B +")
-plt.xlabel('Lớp')
-plt.ylabel(' So sv dat diem ')
-plt.legend(loc='upper right')
-plt.show()
+import tkinter as tk
+
+ #Tạo cửa sổ giao diện
+window = tk.Tk()
+window.title("Số sinh viên trường DHCNHN")
+window.geometry("600x600")
       
+window.mainloop()
