@@ -178,6 +178,24 @@ def reset_result():
     result_text.delete(1.0, END)
     plt.close('all')
 
+
+def number_of_students_by_grade():
+    labels = ["A", "B+", "B", "C+", "C", "D+", "D"]
+    grade_counts = []
+    for label in labels:
+        grade_column = in_data[:, labels.index(label) + 3]
+        grade_count = len(grade_column[grade_column == 1])
+        grade_counts.append(grade_count)
+    # Create a table in the result_text widget
+    result_text.insert(END, "Số lượng sinh viên theo điểm:\n")
+    result_text.insert(END, "--------------------------------\n")
+    result_text.insert(END, "Điểm\tSố lượng sinh viên\n")
+    result_text.insert(END, "--------------------------------\n")
+    for label, count in zip(labels, grade_counts):
+        result_text.insert(END, f"{label}\t{count}\n")
+    result_text.insert(END, "--------------------------------\n")
+
+
 # Tạo cửa sổ giao diện
 window = tk.Tk()
 window.title("Ứng dụng báo cáo")
@@ -207,6 +225,10 @@ reset_button.grid(row=6, column=0, padx=10, pady=10, sticky="ew")
 result_text.grid(row=0, column=1, rowspan=7, padx=10, pady=10, sticky="nsew")
 result_text_scrollbar.grid(row=0, column=2, rowspan=7, sticky="ns")
 xuat_word_button.grid(row=7, column=0, padx=10, pady=10, sticky="ew")
+
+number_of_students_button = tk.Button(window, text="Số lượng sinh viên theo điểm", command=number_of_students_by_grade)
+number_of_students_button.grid(row=9, column=0, padx=10, pady=10, sticky="ew")
+
 
 
 # Chạy ứng dụng
