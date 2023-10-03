@@ -2,6 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import signal
 from scipy.io import wavfile
+import tkinter as tk
+from tkinter import ttk
+from sympy import symbols, lambdify
+from sympy import sin, pi
 
 # Import data
 Fs, signal = wavfile.read('Music2.mp3')
@@ -61,3 +65,43 @@ plt.ylabel('Value')
 plt.grid(True)
 
 plt.show()
+# Tạo cửa sổ giao diện
+window = tk.Tk()
+window.title("Nhập thông số")
+
+# Tạo các thành phần giao diện
+label_fs = tk.Label(window, text="Tần số lấy mẫu (Fs):")
+label_fs.pack()
+entry_fs = tk.Entry(window)
+entry_fs.pack()
+
+label_T = tk.Label(window, text="Thời gian thu thập (T):")
+label_T.pack()
+entry_T = tk.Entry(window)
+entry_T.pack()
+
+label_ff1 = tk.Label(window, text="Tần số ff1:")
+label_ff1.pack()
+entry_ff1 = tk.Entry(window)
+entry_ff1.pack()
+
+label_ff2 = tk.Label(window, text="Tần số ff2:")
+label_ff2.pack()
+entry_ff2 = tk.Entry(window)
+entry_ff2.pack()
+
+label_ff3 = tk.Label(window, text="Tần số ff3:")
+label_ff3.pack()
+entry_ff3 = tk.Entry(window)
+entry_ff3.pack()
+
+label_filter = tk.Label(window, text="Chọn bộ lọc:")
+label_filter.pack()
+combo_filter = ttk.Combobox(window, values=["Thông cao", "Thông dải", "Dải chắn", "Thông thấp"])
+combo_filter.pack()
+
+button_apply = tk.Button(window, text="Áp dụng bộ lọc", command=apply_filter)
+button_apply.pack()
+
+# Hiển thị cửa sổ
+window.mainloop()
