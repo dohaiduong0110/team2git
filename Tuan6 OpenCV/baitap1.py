@@ -35,19 +35,17 @@ def select_image():
 
 
 # Hàm xử lý sự kiện khi nút "Xoay trái" được nhấn
+# Hàm xoay ảnh 90 độ sang trái
 def rotate_left():
-    global rotation_angle
-    rotation_angle -= 90
+    global original_img
+    original_img = original_img.rotate(90, expand=True)
     update_image()
 
-
-# Hàm xử lý sự kiện khi nút "Xoay phải" được nhấn
+# Hàm xoay ảnh 90 độ sang phải
 def rotate_right():
-    global rotation_angle
-    rotation_angle += 90
+    global original_img
+    original_img = original_img.rotate(-90, expand=True)
     update_image()
-
-
 # Hàm xử lý sự kiện khi nhấp chuột trên ảnh để zoom in vào vị trí tùy chọn
 def zoom_in(event):
     global current_scale
