@@ -1,13 +1,30 @@
 import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk
-
-
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
 # Hàm để cập nhật và hiển thị ảnh sau khi zoom và xoay
+# Hàm để cập nhật và hiển thị ảnh sau khi zoom và xoay
+
+# Hàm xử lý sự kiện khi nút "Chọn ảnh" được nhấn
+def select_image():
+    global original_img, current_scale
+    file_path = filedialog.askopenfilename()
+    if file_path:
+        original_img = Image.open(file_path)
+        original_img = cv2.cvtColor(np.array(original_img), cv2.COLOR_RGB2BGR)
+        # Chuyển đổi BGR -> RGB trước khi hiển thị
+        original_img = cv2.cvtColor(original_img, cv2.COLOR_BGR2RGB)
+
+        update_image()
+        current_scale = 1.0
+        update_image()
 def update_image():
     if original_img is not None:
         # Áp dụng zoom và xoay vào ảnh gốc
-        zoomed_img = original_img.resize((int(original_img.width * current_scale), int(original_img.height * current_scale)), Image.LANCZOS)
+        pil_img = Image.fromarray(original_img)  # Convert NumPy array to PIL Image
+        zoomed_img = pil_img.resize((int(pil_img.width * current_scale), int(pil_img.height * current_scale)), Image.LANCZOS)
 
         img = ImageTk.PhotoImage(zoomed_img)
         img_label.config(image=img)
@@ -23,15 +40,6 @@ def on_scale_change(event):
     current_scale = scale.get()
     update_image()
 
-
-# Hàm xử lý sự kiện khi nút "Chọn ảnh" được nhấn
-def select_image():
-    global original_img, current_scale
-    file_path = filedialog.askopenfilename()
-    if file_path:
-        original_img = Image.open(file_path)
-        current_scale = 1.0
-        update_image()
 
 
 # Hàm xử lý sự kiện khi nút "Xoay trái" được nhấn
@@ -77,7 +85,16 @@ def zoom_in(event):
     current_scale *= zoom_factor
     zoom_label.config(text=f"Zoom: {current_scale:.1f}")
 
+def detect_edges():
+    if original_img is not None:
+        gray_img = cv2.cvtColor(original_img, cv2.COLOR_BGR2GRAY)
+        edges = cv2.Canny(gray_img, 90, 100)  # Thay đổi các giá trị ngưỡng tùy theo ảnh
 
+        # Hiển thị ảnh được tách biên bằng Matplotlib
+        plt.figure()
+        plt.imshow(edges, cmap='gray')
+        plt.title("Ảnh Tách Biên")
+        plt.show()
 # Tạo cửa sổ
 window = tk.Tk()
 window.title("Zoom and Rotate Image")
@@ -114,6 +131,8 @@ rotate_right_button.pack()
 img_label = tk.Label(window)
 img_label.pack()
 
+edge_detection_button = tk.Button(control_frame, text="Tách biên", command=detect_edges)
+edge_detection_button.pack()
 # Label hiển thị tỷ lệ zoom
 zoom_label = tk.Label(control_frame, text=f"Zoom: {current_scale:.1f}")
 zoom_label.pack()
