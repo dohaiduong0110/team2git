@@ -44,26 +44,41 @@ def on_scale_change(event):
 
 # Hàm xử lý sự kiện khi nút "Xoay trái" được nhấn
 # Hàm xoay ảnh 90 độ sang trái
+# Hàm xoay 90 độ sang trái
 def rotate_left():
     global original_img
-    original_img = original_img.rotate(90, expand=True)
+
+    h, w = original_img.shape[:2]
+    center = (w / 2, h / 2)
+    M = cv2.getRotationMatrix2D(center, 90, 1.0)
+    original_img = cv2.warpAffine(original_img, M, (w, h))
+
     update_image()
 
 # Hàm xoay ảnh 90 độ sang phải
+# Hàm xoay 90 độ sang phải
 def rotate_right():
-    global original_img
-    original_img = original_img.rotate(-90, expand=True)
-    update_image()
+  global original_img
+
+  h, w = original_img.shape[:2]
+  center = (w/2, h/2)
+
+  # Xoay -90 độ => tương đương xoay 90 độ sang phải
+  M = cv2.getRotationMatrix2D(center, -90, 1.0)
+
+  original_img = cv2.warpAffine(original_img, M, (w,h))
+
+  update_image()
 # Hàm xử lý sự kiện khi nhấp chuột trên ảnh để zoom in vào vị trí tùy chọn
 def zoom_in(event):
     global current_scale
     x = event.x
     y = event.y
+    # Lấy kích thước từ shape
+    h, w = original_img.shape[:2]
 
-    # Tính toán kích thước mới của ảnh sau khi zoom
-    new_width = int(original_img.width * current_scale * zoom_factor)
-    new_height = int(original_img.height * current_scale * zoom_factor)
-
+    new_width = int(w * current_scale * zoom_factor)
+    new_height = int(h * current_scale * zoom_factor)
     # Tính toán lại vị trí x và y tương đối trên ảnh sau khi zoom
     x_ratio = x / img_label.winfo_width()
     y_ratio = y / img_label.winfo_height()
@@ -71,7 +86,12 @@ def zoom_in(event):
     new_y = int(y_ratio * new_height)
 
     # Tạo ảnh mới đã được zoom in
-    zoomed_img = original_img.resize((new_width, new_height), Image.LANCZOS)
+      # Chuyển NumPy array sang PIL Image
+    pil_img = Image.fromarray(original_img)
+
+    # Resize PIL Image
+    zoomed_img = pil_img.resize((new_width, new_height), Image.LANCZOS)
+
 
     # Cắt ảnh theo vị trí mới
     zoomed_img = zoomed_img.crop((new_x - img_label.winfo_width() // 2, new_y - img_label.winfo_height() // 2,
