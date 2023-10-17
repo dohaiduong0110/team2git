@@ -8,9 +8,8 @@ def update_image():
     if original_img is not None:
         # Áp dụng zoom và xoay vào ảnh gốc
         zoomed_img = original_img.resize((int(original_img.width * current_scale), int(original_img.height * current_scale)), Image.LANCZOS)
-        rotated_img = zoomed_img.rotate(rotation_angle)
 
-        img = ImageTk.PhotoImage(rotated_img)
+        img = ImageTk.PhotoImage(zoomed_img)
         img_label.config(image=img)
         img_label.image = img
 
@@ -32,7 +31,6 @@ def select_image():
     if file_path:
         original_img = Image.open(file_path)
         current_scale = 1.0
-        rotation_angle = 0  # Đặt góc xoay về 0 độ
         update_image()
 
 
@@ -50,22 +48,55 @@ def rotate_right():
     update_image()
 
 
+# Hàm xử lý sự kiện khi nhấp chuột trên ảnh để zoom in vào vị trí tùy chọn
+def zoom_in(event):
+    global current_scale
+    x = event.x
+    y = event.y
+
+    # Tính toán kích thước mới của ảnh sau khi zoom
+    new_width = int(original_img.width * current_scale * zoom_factor)
+    new_height = int(original_img.height * current_scale * zoom_factor)
+
+    # Tính toán lại vị trí x và y tương đối trên ảnh sau khi zoom
+    x_ratio = x / img_label.winfo_width()
+    y_ratio = y / img_label.winfo_height()
+    new_x = int(x_ratio * new_width)
+    new_y = int(y_ratio * new_height)
+
+    # Tạo ảnh mới đã được zoom in
+    zoomed_img = original_img.resize((new_width, new_height), Image.LANCZOS)
+
+    # Cắt ảnh theo vị trí mới
+    zoomed_img = zoomed_img.crop((new_x - img_label.winfo_width() // 2, new_y - img_label.winfo_height() // 2,
+                                  new_x + img_label.winfo_width() // 2, new_y + img_label.winfo_height() // 2))
+
+    img = ImageTk.PhotoImage(zoomed_img)
+    img_label.config(image=img)
+    img_label.image = img
+
+    # Cập nhật tỷ lệ zoom
+    current_scale *= zoom_factor
+    zoom_label.config(text=f"Zoom: {current_scale:.1f}")
+
+
 # Tạo cửa sổ
 window = tk.Tk()
 window.title("Zoom and Rotate Image")
 window.geometry('950x450')
 
 # Khai báo biến toàn cục
-current_scale = 1.0
+current_scale= 1.0
 original_img = None
 rotation_angle = 0
+zoom_factor = 1  # Hệ số zoom tùy chỉnh
 
 # Tạo frame chứa thanh trượt và nút chọn ảnh
 control_frame = tk.Frame(window)
 control_frame.pack(side="left")
 
 # Tạo thanh trượt
-scale = tk.Scale(control_frame, from_=0.1, to=2.0, resolution=0.1, orient=tk.HORIZONTAL, command=on_scale_change)
+scale = tk.Scale(control_frame, from_=0.1, to=3.0, resolution=0.1, orient=tk.HORIZONTAL, command=on_scale_change)
 scale.set(current_scale)
 scale.pack()
 
@@ -88,5 +119,8 @@ img_label.pack()
 # Label hiển thị tỷ lệ zoom
 zoom_label = tk.Label(control_frame, text=f"Zoom: {current_scale:.1f}")
 zoom_label.pack()
+
+# Đặt sự kiện nhấp chuột trái để zoom in
+img_label.bind("<Button-1>", zoom_in)
 
 window.mainloop()
