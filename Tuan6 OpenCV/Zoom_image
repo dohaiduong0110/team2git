@@ -1,0 +1,45 @@
+import cv2
+import numpy as np
+import tkinter as tk
+from PIL import Image, ImageTk
+
+def zoom_image():
+    # Đọc hình ảnh ban đầu
+    image = cv2.imread('1-contrast.jpg')
+
+    # Tọa độ điểm bạn muốn zoom vào (vd: (x, y))
+    zoom_point = (100, 150)
+
+    # Kích thước cửa sổ zoom
+    window_size = 200
+
+    # Tính toán vùng cần zoom
+    x1 = max(0, zoom_point[0] - window_size // 2)
+    y1 = max(0, zoom_point[1] - window_size // 2)
+    x2 = min(image.shape[1], zoom_point[0] + window_size // 2)
+    y2 = min(image.shape[0], zoom_point[1] + window_size // 2)
+
+    # Cắt và thay đổi kích thước vùng đã chọn
+    zoomed_region = image[y1:y2, x1:x2]
+    zoomed_region = cv2.resize(zoomed_region, (image.shape[1], image.shape[0]))
+
+    # Hiển thị hình ảnh ban đầu và sau khi zoom
+    cv2.imshow('Original Image', image)
+    cv2.imshow('Zoomed In Image', zoomed_region)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+def main():
+    # Tạo cửa sổ Tkinter
+    root = tk.Tk()
+    root.title("Image Zoom")
+
+    # Tạo nút để thực hiện việc zoom
+    zoom_button = tk.Button(root, text="Zoom Image", command=zoom_image)
+    zoom_button.pack()
+
+    # Chạy ứng dụng Tkinter
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
