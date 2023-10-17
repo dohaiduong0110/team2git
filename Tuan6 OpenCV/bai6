@@ -1,0 +1,74 @@
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+import tkinter as tk
+from tkinter import filedialog
+from PIL import Image, ImageTk
+
+def apply_threshold(x, y, threshold_low, threshold_high):
+    img = cv2.imread('1-contrast.jpg', cv2.IMREAD_GRAYSCALE)
+    zoomed = cv2.resize(img, (x, y))
+
+    # Tách biên ảnh
+    edges = cv2.Canny(zoomed, threshold_low, threshold_high)
+
+    Titles = ["Original", "Zoomed", "Edges"]
+    images = [img, zoomed, edges]
+
+    for i in range(3):
+        plt.subplot(3, 1, i+1)
+        plt.title(Titles[i])
+        plt.imshow(images[i], cmap='gray')
+    plt.show()
+
+def get_values():
+    x = int(x_entry.get())
+    y = int(y_entry.get())
+    threshold_low = int(threshold_low_entry.get())
+    threshold_high = int(threshold_high_entry.get())
+    apply_threshold(x, y, threshold_low, threshold_high)
+
+def load_image():
+    file_path = filedialog.askopenfilename()
+    if file_path:
+        img = Image.open(file_path)
+        img = ImageTk.PhotoImage(img)
+        canvas.create_image(0, 0, anchor="nw", image=img)
+        canvas.image = img
+
+root = tk.Tk()
+root.title("Image Zoom and Edge Detection App")
+
+frame = tk.Frame(root)
+frame.pack()
+
+x_label = tk.Label(frame, text="Enter x:")
+x_label.pack()
+x_entry = tk.Entry(frame)
+x_entry.pack()
+
+y_label = tk.Label(frame, text="Enter y:")
+y_label.pack()
+y_entry = tk.Entry(frame)
+y_entry.pack()
+
+threshold_low_label = tk.Label(frame, text="Enter Lower Threshold:")
+threshold_low_label.pack()
+threshold_low_entry = tk.Entry(frame)
+threshold_low_entry.pack()
+
+threshold_high_label = tk.Label(frame, text="Enter Higher Threshold:")
+threshold_high_label.pack()
+threshold_high_entry = tk.Entry(frame)
+threshold_high_entry.pack()
+
+zoom_button = tk.Button(frame, text="Zoom and Detect Edges", command=get_values)
+zoom_button.pack()
+
+load_button = tk.Button(frame, text="Load Image", command=load_image)
+load_button.pack()
+
+canvas = tk.Canvas(root, width=500, height=500)
+canvas.pack()
+
+root.mainloop()
