@@ -115,7 +115,7 @@ def detect_edges():
         plt.title("Ảnh Tách Biên")
         plt.show()
 
-def loc_thong_thap():
+def loc_thong_thap_5x5():
     global original_img
 
     if original_img is not None:
@@ -123,21 +123,11 @@ def loc_thong_thap():
 
         rows, cols = img.shape[:2]
         kernel_identity = np.array([[0, 0, 0], [0, 1, 0], [0, 0, 0]])
-        kernel_3x3 = np.ones((3, 3), np.float32) / 9.0
+
         kernel_5x5 = np.ones((5, 5), np.float32) / 25.0
-        kernel_7x7 = np.ones((7, 7), np.float32) / 49.0
 
         output = cv2.filter2D(img, -1, kernel_identity)
-        plt.figure()
-        plt.title("Ảnh Gốc")
-        plt.imshow(img, cmap='gray')
-        plt.show()
 
-        output = cv2.filter2D(img, -1, kernel_3x3)
-        plt.figure()
-        plt.title("Ảnh Làm Mịn 3x3")
-        plt.imshow(output, cmap='gray')
-        plt.show()
 
         output = cv2.filter2D(img, -1, kernel_5x5)
         plt.figure()
@@ -145,12 +135,19 @@ def loc_thong_thap():
         plt.imshow(output, cmap='gray')
         plt.show()
 
-        output = cv2.filter2D(img, -1, kernel_7x7)
+def loc_thong_thap_3x3():
+    global original_img
+    if original_img is not None:
+        img = original_img.copy()  # Tạo một bản sao của ảnh gốc để thực hiện bộ lọc
+        rows, cols = img.shape[:2]
+        kernel_identity = np.array([[0, 0, 0], [0, 1, 0], [0, 0, 0]])
+        kernel_3x3 = np.ones((3, 3), np.float32) / 9.0
+        output = cv2.filter2D(img, -1, kernel_identity)
+        output = cv2.filter2D(img, -1, kernel_3x3)
         plt.figure()
-        plt.title("Ảnh Làm Mịn 7x7")
+        plt.title("Ảnh Làm Mịn 3x3")
         plt.imshow(output, cmap='gray')
         plt.show()
-
 # Tạo cửa sổ
 window = tk.Tk()
 window.title("Sử dụng bộ lọc")
@@ -189,10 +186,15 @@ img_label.pack()
 
 edge_detection_button = tk.Button(control_frame, text="Tách biên", command=detect_edges)
 edge_detection_button.pack()
-# Bộ lọc  thông thấp
+# Bộ lọc  thông thấp 3x3
 img_label = tk.Label(window)
 img_label.pack()
-edge_detection_button = tk.Button(control_frame, text="Bộ lọc", command=loc_thong_thap)
+edge_detection_button = tk.Button(control_frame, text="Bộ lọc 3x3", command=loc_thong_thap_3x3)
+edge_detection_button.pack()
+# Bộ lọc  thông thấp 5x5
+img_label = tk.Label(window)
+img_label.pack()
+edge_detection_button = tk.Button(control_frame, text="Bộ lọc 5x5", command=loc_thong_thap_5x5)
 edge_detection_button.pack()
 # Label hiển thị tỷ lệ zoom
 zoom_label = tk.Label(control_frame, text=f"Zoom: {current_scale:.1f}")
